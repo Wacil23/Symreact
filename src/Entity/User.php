@@ -11,19 +11,23 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ApiResource]
+#[UniqueEntity("email", message: "L'email doit être différent")]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column()]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'invoices_subresource'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message: "L'email doit être reseigner")]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -35,14 +39,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     #[Groups(['customers_read', 'invoices_read'])]
+    #[Assert\NotBlank(message: "Le mot de passe doit être reseigner")]
     private ?string $password = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message: "Le prénom doit être reseigner")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['customers_read', 'invoices_read'])]
+    #[Groups(['customers_read', 'invoices_read', 'invoices_subresource'])]
+    #[Assert\NotBlank(message: "Le nom doit être reseigner")]
     private ?string $lastName = null;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Customer::class)]

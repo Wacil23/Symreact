@@ -8,10 +8,12 @@ use App\Repository\CustomerRepository;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use Doctrine\Common\Collections\Collection;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 #[ApiResource(
@@ -34,10 +36,13 @@ class Customer
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read'])]
+    #[Assert\NotBlank(message: "Le prenom du customer est obligatoir")]
+    #[Assert\Length(min: 3, minMessage: "Le prenom du customer entre 3 et 255")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read'])]
+    #[Assert\NotBlank(message: "Le nom du customer est obligatoir")]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -46,14 +51,18 @@ class Customer
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read'])]
+    #[Assert\NotBlank(message: "L'email du customer est obligatoir")]
+    #[Assert\Email(message: "L'email doit être obligatoire")]
     private ?string $email = null;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     #[Groups(['customers_read'])]
+    #[ApiSubresource()]
     private Collection $invoices;
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
     #[Groups(['customers_read'])]
+    #[Assert\NotBlank(message: "L'utilisateur est obligatoir")]
     private ?User $user = null;
 
     public function __construct()
