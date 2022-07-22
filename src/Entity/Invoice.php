@@ -106,14 +106,16 @@ class Invoice
 
     public function getSentAt()
     {
+
         return $this->sentAt;
     }
 
     public function setSentAt($sentAt): self
     {
-        $this->sentAt = $sentAt;
+            $this->sentAt = $sentAt;
+            return $this;
+        
 
-        return $this;
     }
 
     public function getStatus(): ?string
