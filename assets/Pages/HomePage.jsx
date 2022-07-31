@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react';  
 
 const HomePage = props => {
     return (
     <><div className="card mb-3">
-      <h3 className="card-header">Card header</h3>
+      <h3 className="card-header text-center">Bienvenue sur mon tout premier CRM</h3>
       <div className="card-body">
         <h5 className="card-title">Special title treatment</h5>
         <h6 className="card-subtitle text-muted">Support card subtitle</h6>

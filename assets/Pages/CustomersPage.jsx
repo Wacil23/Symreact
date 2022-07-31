@@ -1,50 +1,65 @@
-import React, {useEffect, useState} from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import Pagination from '../Components/Pagination';
+import customersApi from '../Services/customersApi';
 
 const CustomersPage = (props) => {
 
     const [customers, setCustomers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [search, setSearch] = useState("")
 
-    useEffect(() => {
-        axios
-        .get('https://localhost:8000/api/customers')
-        .then(response => response.data['hydra:member'])
-        .then(data => setCustomers(data))
-        .catch(err => console.error(err.response));
-    }, []);
-
-    const handleDelete = (id) => {
-        const originalCustomer = [...customers];
-
-        setCustomers(customers.filter(customer => customer.id !== id));
-
-        axios
-        .delete('https://localhost:8000/api/customers/' + id)
-        .then(response => console.log('ok'))
-        .catch(error => {
-            setCustomers(originalCustomer);
+    const fetchCustomers = async () => 
+    {
+        try
+        {
+            const data = await customersApi.findAll(customers)
+            setCustomers(data)
+        }
+        catch(error) 
+        {
             console.log(error.response);
-        });
-    };
-
-    const handleChangePage = (page) => {
-        setCurrentPage(page);
+        }
     }
+
+    useEffect(() => {fetchCustomers()}, []);
+
+    const handleDelete = async (id) => 
+    {
+        const originalCustomer = [...customers];
+        setCustomers(customers.filter(customer => customer.id !== id));
+        try
+        {
+            await customersApi.delete(id)
+        }
+        catch(error)
+        {
+            setCustomers(originalCustomer);
+        };
+    }
+
+    const handleChangePage = (page) => setCurrentPage(page);
 
     const itemsPerPage = 10;
-    const pageCount = Math.ceil(customers.length / itemsPerPage);
-    const pages = [];
 
-    for(let i = 1; i<= pageCount; i++) {
-        pages.push(i)
+    const filterCustomers = customers.filter(c => 
+        c.firstName.toLowerCase().includes(search.toLowerCase()) || 
+        c.lastName.toLowerCase().includes(search.toLowerCase())
+    );
+
+    const paginatedCustomers = Pagination.getData(filterCustomers, currentPage,itemsPerPage);
+
+    const handleSearch = ({currentTarget}) => 
+    {
+        setSearch(currentTarget.value);
+        setCurrentPage(1);
     }
-
-    const start = currentPage * itemsPerPage - itemsPerPage;
-    const paginatedCustomers = customers.slice(start, start + itemsPerPage);
 
     return ( <>
         <h1>liste des clients</h1>
+
+        <div className="form-group">
+            <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher..." />
+        </div>
 
         <table className="table table-hover">
             <thead>
@@ -66,7 +81,7 @@ const CustomersPage = (props) => {
                     <td>{customer.email}</td>
                     <td>{customer.company}</td>
                     <td>
-                        <span className="badge badge-light">{customer.invoices.length}</span>
+                        <span className="badge bg-info">{customer.invoices.length}</span>
                     </td>
                     <td>{customer.totalAmount.toLocaleString()} €</td>
                     <td>
@@ -74,24 +89,9 @@ const CustomersPage = (props) => {
                     </td>
                 </tr>
                 ))}
-
             </tbody>
         </table>
-        <div className="d-flex justify-content-center">
-            <ul className="pagination">
-                <li className={"page-item" + (currentPage === 1 && " disabled")}>
-                    <button className="page-link" onClick={() => handleChangePage(currentPage - 1)}>&laquo;</button>
-                </li>
-                {pages.map(page => 
-                <li key={page} className={"page-item" + (currentPage === page && " active")}>
-                    <button className="page-link" onClick={() => handleChangePage(page)}>{page}</button>
-                </li>
-                )}
-                <li className={"page-item" + (currentPage === pageCount && " disabled")}>
-                    <button className="page-link" onClick={() => handleChangePage(currentPage + 1)}>&raquo;</button>
-                </li>
-            </ul>
-        </div>
+       {itemsPerPage < filterCustomers.length && <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} length={filterCustomers.length} onPageChange={handleChangePage} />}
      </>
     );
 }
