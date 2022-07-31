@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import moment from 'moment';
+import React, { useEffect, useState } from 'react';
 import Pagination from '../Components/Pagination';
 import invoicesAPI from '../Services/invoicesAPI';
 
@@ -21,10 +20,10 @@ const InvoicesPage = (props) => {
     const [invoices, setInvoices] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState("");
+    const itemsPerPage = 10;
 
     const handleChangePage = (page) => setCurrentPage(page);
 
-    const itemsPerPage = 10;
 
     const handleSearch = ({currentTarget}) => 
     {
@@ -69,7 +68,6 @@ const InvoicesPage = (props) => {
     }
 
     const paginatedInvoices = Pagination.getData(filteredInvoices, currentPage,itemsPerPage);
-
 
     useEffect(() => {fetchInvoices()}, []);
 
