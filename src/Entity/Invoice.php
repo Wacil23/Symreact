@@ -54,13 +54,11 @@ class Invoice
 
     #[ORM\Column]
     #[Groups(['invoices_read', 'customers_read', 'invoices_subresource'])]
-    #[Assert\NotBlank(message: "Le montant de la facture est obligatoir")]
-    #[Assert\Type(type: "numeric", message: "Le montant du customer est numeric")]
+    #[Assert\NotBlank(message: "Le montant de la facture est obligatoire")]
     private $amount = null;
 
     #[ORM\Column]
     #[Groups(['invoices_read', 'customers_read', 'invoices_subresource'])]
-    #[Assert\Date(message: "La date doit être au format yyyy-mm-dd")]
     #[Assert\NotBlank(message: "La date d'envoie doit etre renseigner")]
     private $sentAt = null;
 
@@ -97,7 +95,7 @@ class Invoice
         return $this->amount;
     }
 
-    public function setAmount(float $amount): self
+    public function setAmount($amount): self
     {
         $this->amount = $amount;
 
@@ -110,7 +108,7 @@ class Invoice
         return $this->sentAt;
     }
 
-    public function setSentAt($sentAt): self
+    public function setSentAt($sentAt)
     {
             $this->sentAt = $sentAt;
             return $this;

@@ -30,7 +30,7 @@ function setup() {
     }
 }
 
-function isAuth(){
+function isAuth() {
     const token = window.localStorage.getItem("AuthToken");
     if (token) {
         const { exp: expiration } = jwtDecode(token);

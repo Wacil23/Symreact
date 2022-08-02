@@ -36,13 +36,14 @@ class Customer
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read'])]
-    #[Assert\NotBlank(message: "Le prenom du customer est obligatoir")]
-    #[Assert\Length(min: 3, minMessage: "Le prenom du customer entre 3 et 255")]
+    #[Assert\Length(min: 2, minMessage: "Le prenom du customer doit être entre de 2 caractères minimum", max: 255, maxMessage: "Le prenom du customer doit être de 255 caractères maximum")]
+    #[Assert\NotBlank(message: "Le prénom du customer est obligatoire")]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read'])]
-    #[Assert\NotBlank(message: "Le nom du customer est obligatoir")]
+    #[Assert\Length(min: 2, minMessage: "Le nom du customer doit être entre de 2 caractères minimum", max: 255, maxMessage: "Le nom du customer doit être de 255 caractères maximum")]
+    #[Assert\NotBlank(message: "Le nom du customer est obligatoire")]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -51,8 +52,8 @@ class Customer
 
     #[ORM\Column(length: 255)]
     #[Groups(['customers_read', 'invoices_read'])]
-    #[Assert\NotBlank(message: "L'email du customer est obligatoir")]
-    #[Assert\Email(message: "L'email doit être obligatoire")]
+    #[Assert\NotBlank(message: "L'email du customer est obligatoire")]
+    #[Assert\Email(message: "Le format de l'email doit être valide")]
     private ?string $email = null;
 
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
@@ -62,7 +63,7 @@ class Customer
 
     #[ORM\ManyToOne(inversedBy: 'customers')]
     #[Groups(['customers_read'])]
-    #[Assert\NotBlank(message: "L'utilisateur est obligatoir")]
+    #[Assert\NotBlank(message: "L'utilisateur est obligatoire")]
     private ?User $user = null;
 
     public function __construct()

@@ -1,9 +1,10 @@
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Pagination from '../Components/Pagination';
 import invoicesAPI from '../Services/invoicesAPI';
 
-const STATUS_CLASSES  = {
+const STATUS_CLASSES = {
     PAID: "success",
     SENT: 'light',
     CANCELLED: "danger"
@@ -25,60 +26,59 @@ const InvoicesPage = (props) => {
     const handleChangePage = (page) => setCurrentPage(page);
 
 
-    const handleSearch = ({currentTarget}) => 
-    {
+    const handleSearch = ({ currentTarget }) => {
         setSearch(currentTarget.value);
         setCurrentPage(1);
     };
 
     const filteredInvoices = invoices.filter(
-        i => 
-        i.customer.lastName.toLowerCase().includes(search.toLowerCase()) 
-            || 
+        i =>
+            i.customer.lastName.toLowerCase().includes(search.toLowerCase())
+            ||
             i.customer.firstName.toLowerCase().includes(search.toLowerCase())
             ||
             i.amount.toString().startsWith(search.toLowerCase())
             ||
             STATUS_LABEL[i.status].toLowerCase().includes(search.toLowerCase())
     );
-    
+
     const fetchInvoices = async () => {
-        try{
+        try {
             const data = await invoicesAPI.findAll()
             setInvoices(data);
         }
-        catch(err){
+        catch (err) {
             console.log(err.response);
         }
     };
 
-    const handleDelete = async (id) => 
-    {
+    const handleDelete = async (id) => {
         const originalInvoices = [...invoices];
         setInvoices(invoices.filter(i => i.id !== id));
-        try
-        {
+        try {
             await invoicesAPI.delete(id);
         }
-        catch(error)
-        {
+        catch (error) {
             setInvoices(originalInvoices);
             console.log(error);
         };
     }
 
-    const paginatedInvoices = Pagination.getData(filteredInvoices, currentPage,itemsPerPage);
+    const paginatedInvoices = Pagination.getData(filteredInvoices, currentPage, itemsPerPage);
 
-    useEffect(() => {fetchInvoices()}, []);
+    useEffect(() => { fetchInvoices() }, []);
 
     const formDate = (str) => moment(str).format('DD/MM/YYYY');
 
-    return ( 
+    return (
         <>
-            <h1>Listes des factures</h1>
+            <div className="d-flex justify-content-between align-items-center">
+                <h1>Listes des factures</h1>
+                <Link className="btn btn-info" to="/invoices/new">Créer une facture</Link>
+            </div>
             <div className="form-group">
-            <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher..." />
-        </div>
+                <input type="text" onChange={handleSearch} value={search} className="form-control" placeholder="Rechercher..." />
+            </div>
             <table className="table table-hover">
                 <thead>
                     <tr>
@@ -93,7 +93,7 @@ const InvoicesPage = (props) => {
                 <tbody>
                     {paginatedInvoices.map(invoice => <tr key={invoice.id}>
                         <td>{invoice.chrono}</td>
-                        <td> 
+                        <td>
                             <a href="#">{invoice.customer.firstName} {invoice.customer.lasttName}</a>
                         </td>
                         <td className="text-center">{formDate(invoice.sentAt)}</td>
@@ -104,16 +104,16 @@ const InvoicesPage = (props) => {
                         </td>
                         <td className="text-center">{invoice.amount.toLocaleString()} €</td>
                         <td>
-                        <button className="btn btn-sm btn-primary mr-3">Editer</button>
+                            <Link to={"/invoices/" + invoice.id} className="btn btn-sm btn-primary mr-3">Editer</Link>
                             <button className="btn btn-sm btn-danger" onClick={() => handleDelete(invoice.id)} >Supprimer</button>
                         </td>
-                    </tr> )}
-                    
+                    </tr>)}
+
                 </tbody>
             </table>
             <Pagination currentPage={currentPage} itemsPerPage={itemsPerPage} onPageChange={handleChangePage} length={filteredInvoices.length} />
         </>
-     );
+    );
 }
- 
+
 export default InvoicesPage;

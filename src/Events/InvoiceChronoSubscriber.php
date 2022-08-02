@@ -37,6 +37,13 @@ class InvoiceChronoSubscriber implements EventSubscriberInterface {
         {
             $nextChrono = $this->repository->findNextChrono($this->security->getUser());
             $invoice->setChrono($nextChrono);
+            
+            if (empty($invoice->getSentAt())) {
+                date_default_timezone_set("Europe/Paris");
+                $newDate = new \DateTime('now');
+                $invoice->setSentAt($newDate->format('Y-m-d H:i:s'));
+            }
+
         }
     }
 }

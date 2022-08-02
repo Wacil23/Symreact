@@ -1,32 +1,32 @@
 import React from 'react';
 
-const Pagination = ({currentPage, itemsPerPage, length, onPageChange}) => {
+const Pagination = ({ currentPage, itemsPerPage, length, onPageChange }) => {
 
     const pageCount = Math.ceil(length / itemsPerPage);
     const pages = [];
 
-    for(let i = 1; i<= pageCount; i++) {
+    for (let i = 1; i <= pageCount; i++) {
         pages.push(i)
     }
 
-    return ( <>
+    return (<>
         <div className="d-flex justify-content-center">
-        <ul className="pagination">
-            <li className={"page-item" + (currentPage === 1 && " disabled")}>
-                <button className="page-link" onClick={() => onPageChange(currentPage - 1)}>&laquo;</button>
-            </li>
-            {pages.map(page => 
-            <li key={page} className={"page-item" + (currentPage === page && " active")}>
-                <button className="page-link" onClick={() => onPageChange(page)}> {page} </button>
-            </li>
-            )}
-            <li className={"page-item" + (currentPage === pageCount && " disabled")}>
-                <button className="page-link" onClick={() => onPageChange(currentPage + 1)}>&raquo;</button>
-            </li>
-        </ul>
-    </div>
+            <ul className="pagination">
+                <li className={"page-item" + (currentPage === 1 && " disabled")}>
+                    <button className="page-link" onClick={() => onPageChange(currentPage - 1)}>&laquo;</button>
+                </li>
+                {pages.map(page =>
+                    <li key={page} className={"page-item" + (currentPage === page && " active")}>
+                        <button className="page-link" onClick={() => onPageChange(page)}> {page} </button>
+                    </li>
+                )}
+                <li className={"page-item" + (currentPage === pageCount && " disabled")}>
+                    <button className="page-link" onClick={() => onPageChange(currentPage + 1)}>&raquo;</button>
+                </li>
+            </ul>
+        </div>
     </>
-     );
+    );
 }
 
 Pagination.getData = (items, currentPage, itemsPerPage) => {
