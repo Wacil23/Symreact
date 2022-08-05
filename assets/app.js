@@ -1,6 +1,7 @@
 import * as React from "react";
 import ReactDOM from "react-dom";
 import { HashRouter, Route, Switch, withRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import './bootstrap';
 import Navbar from "./Components/Navbar";
 import PrivateRoute from "./Components/PrivateRoute";
@@ -13,7 +14,9 @@ import InvoicesPage from "./Pages/InvoicesPage";
 import LoginPage from "./Pages/LoginPage";
 import RegisterPage from "./Pages/RegisterPage";
 import authAPI from "./Services/authAPI";
+import { toast } from "react-toastify";
 import './styles/app.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 authAPI.setup();
 
@@ -41,6 +44,7 @@ const App = () => {
                     </Switch>
                 </main>
             </HashRouter>
+            <ToastContainer position={toast.POSITION.BOTTOM_LEFT} />
         </AuthContext.Provider>
     )
 };

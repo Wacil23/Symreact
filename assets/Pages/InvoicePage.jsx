@@ -4,25 +4,22 @@ import Field from '../Components/Forms/Field';
 import Select from '../Components/Forms/Select';
 import customersApi from '../Services/customersApi';
 import invoicesAPI from '../Services/invoicesAPI';
+import {toast} from 'react-toastify'
 
 const InvoicePage = ({ history, match }) => {
 
     const { id = "new" } = match.params;
-
     const [invoice, setInvoice] = useState({
         amount: "",
         customer: "",
         status: "SENT"
     });
-
     const [editing, setEditing] = useState(false);
-
     const [error, setError] = useState({
         amount: "",
         customer: "",
         status: ""
     });
-
     const [customers, setCustomers] = useState([]);
 
     const fetchCustomer = async () => {
@@ -32,6 +29,7 @@ const InvoicePage = ({ history, match }) => {
             console.log('coucou', data);
             if (!invoice.customer) setInvoice({ ...invoice, customer: data[0].id });
         } catch (err) {
+            toast.error("Impossible de charger les clients")
             history.replace("/invoices")
         }
     };
@@ -41,6 +39,7 @@ const InvoicePage = ({ history, match }) => {
             const { amount, status, customer } = await invoicesAPI.find(id)
             setInvoice({ amount, status, customer: customer.id });
         } catch (err) {
+            toast.error("Impossible de charger la facture demandée")
             console.log(err);
             history.replace("/invoices");
         }
@@ -67,7 +66,9 @@ const InvoicePage = ({ history, match }) => {
         try {
             if (editing) {
                 const response = await await invoicesAPI.update(id, invoice);
+                toast.success("La facture a bien été modifiée")
             } else {
+                toast.success("La facture a bien été enregistrée")
                 const response = await invoicesAPI.create(invoice)
             }
             history.replace("/invoices")
@@ -79,6 +80,7 @@ const InvoicePage = ({ history, match }) => {
                     apiErrors[propertyPath] = message;
                 });
                 setError(apiErrors);
+                toast.error("Des erreurs dans votre formulaire")
             }
         }
     }
